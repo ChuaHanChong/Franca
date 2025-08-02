@@ -10,7 +10,7 @@ import torch
 from torch.utils.data import Sampler
 from torchdata.stateful_dataloader import StatefulDataLoader
 
-from franca.data.datasets import ImageNet, ImageNet22k, get_laion_dataset
+from franca.data.datasets import ImageNet, ImageNet22k, get_laion_dataset, ImageShipID_Extra
 from franca.data.samplers import EpochSampler, InfiniteSampler, ShardedInfiniteSampler
 
 logger = logging.getLogger("franca")
@@ -63,6 +63,10 @@ def _parse_dataset_str(dataset_str: str):
         class_ = ImageNet22k
     elif name == "LAION":
         class_ = get_laion_dataset
+    elif name == "ImageShipID_Extra":
+        class_ = ImageShipID_Extra
+        if "split" in kwargs:
+            kwargs["split"] = ImageShipID_Extra.Split[kwargs["split"]]
     else:
         raise ValueError(f'Unsupported dataset "{name}"')
 
