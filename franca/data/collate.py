@@ -21,9 +21,7 @@ def collate_data_and_cast(
             n_global_crops = len(sub_samples_list[0]["image"]["global_crops"])
             n_local_crops = len(sub_samples_list[0]["image"]["local_crops"])
 
-            collated_global_crops = torch.stack(
-                [s["image"]["global_crops"][i] for i in range(n_global_crops) for s in sub_samples_list]
-            )
+            collated_global_crops = torch.stack([s["image"]["global_crops"][i] for i in range(n_global_crops) for s in sub_samples_list])
 
             collated_local_crops = torch.stack([s["image"]["local_crops"][i] for i in range(n_local_crops) for s in sub_samples_list])
 
