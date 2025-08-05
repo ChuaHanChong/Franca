@@ -273,9 +273,9 @@ def do_train(cfg, model, resume=False):
         optimizer.zero_grad(set_to_none=True)
         loss_dict = defaultdict(float)
         for data_shard in data:
-             shard_loss_dict = model.forward_backward(data_shard, teacher_temp=teacher_temp, scale=1.0 / accum_steps)
-             for k, v in shard_loss_dict.items():
-                 loss_dict[k] += v.detach()  # .detach(): keep the graph small / avoid dangling references
+            shard_loss_dict = model.forward_backward(data_shard, teacher_temp=teacher_temp, scale=1.0 / accum_steps)
+            for k, v in shard_loss_dict.items():
+                loss_dict[k] += v.detach()  # .detach(): keep the graph small / avoid dangling references
         loss_dict = {k: v / accum_steps for k, v in loss_dict.items()}
 
         # clip gradients
