@@ -232,9 +232,9 @@ def do_train(cfg, model, resume=False):
 
     periodic_checkpointer = PeriodicCheckpointer(
         checkpointer,
-        period=1 * OFFICIAL_EPOCH_LENGTH,
+        period=OFFICIAL_EPOCH_LENGTH,
         max_iter=max_iter,
-        max_to_keep=5,
+        max_to_keep=10,
     )
 
     # training loop
@@ -306,6 +306,7 @@ def do_train(cfg, model, resume=False):
 
         if math.isnan(sum(loss_dict_reduced.values())):
             logger.info("NaN detected")
+            logger.info(loss_dict_reduced)
             raise AssertionError
         losses_reduced = sum(loss for loss in loss_dict_reduced.values())
 
