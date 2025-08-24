@@ -9,3 +9,4 @@ from franca.data.datasets.multishard_streamer import (
     get_laion_dataset,
 )
 from franca.data.datasets.image_ship_id_extra import ImageShipID_Extra
+from franca.data.datasets.image_ship_id import ImageShipID
