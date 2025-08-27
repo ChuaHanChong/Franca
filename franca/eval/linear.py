@@ -799,11 +799,12 @@ def main(args):
         test_metric_types=args.test_metric_types,
         val_class_mapping_fpath=args.val_class_mapping_fpath,
         test_class_mapping_fpaths=args.test_class_mapping_fpaths,
+
+
         balanced_sampler=args.balanced_sampler,
         balanced_sampler_mode=args.balanced_sampler_mode,
+        logit_adjusted_loss=args.logit_adjusted_loss,
     )
-
-
     return 0
 
 
