@@ -135,16 +135,6 @@ def get_args_parser(
         type=str,
         help="Path to a file containing a mapping to adjust classifier outputs",
     )
-
-
-
-
-
-
-
-
-
-
     parser.set_defaults(
         train_dataset_str="ImageNet:split=TRAIN",
         val_dataset_str="ImageNet:split=VAL",
@@ -196,77 +186,6 @@ def create_linear_input(x_tokens_list, use_n_blocks, use_avgpool):
     return output.float()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class LinearClassifier(nn.Module):
     """Linear layer to train on top of frozen features"""
 
@@ -283,42 +202,6 @@ class LinearClassifier(nn.Module):
     def forward(self, x_tokens_list):
         output = create_linear_input(x_tokens_list, self.use_n_blocks, self.use_avgpool)
         return self.linear(output)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class AllClassifiers(nn.Module):
@@ -362,9 +245,6 @@ def setup_linear_classifiers(sample_output, n_last_blocks_list, learning_rates, 
         for avgpool in [False, True]:
             for _lr in learning_rates:
                 lr = scale_lr(_lr, batch_size)
-                
-                
-
                 out_dim = create_linear_input(sample_output, use_n_blocks=n, use_avgpool=avgpool).shape[1]
                 linear_classifier = LinearClassifier(
                     out_dim,
@@ -643,9 +523,6 @@ def run_eval_linear(
     test_class_mapping_fpaths=[None],
     val_metric_type=MetricType.MEAN_ACCURACY,
     test_metric_types=None,
-
-
-
     **kwargs,
 ):
     seed = 0
@@ -672,19 +549,11 @@ def run_eval_linear(
         sampler_type = SamplerType.SHARDED_INFINITE
         # sampler_type = SamplerType.INFINITE
 
-
-
-
     n_last_blocks_list = [1, 4]
     n_last_blocks = max(n_last_blocks_list)
     autocast_ctx = partial(torch.cuda.amp.autocast, enabled=True, dtype=autocast_dtype)
     feature_model = ModelWithIntermediateLayers(model, n_last_blocks, autocast_ctx)
     sample_output = feature_model(train_dataset[0][0].unsqueeze(0).cuda())
-
-
-
-
-
 
     linear_classifiers, optim_param_groups = setup_linear_classifiers(
         sample_output,
@@ -693,8 +562,6 @@ def run_eval_linear(
         batch_size,
         training_num_classes,
     )
-
-
 
     optimizer = torch.optim.SGD(optim_param_groups, momentum=0.9, weight_decay=0)
     max_iter = epochs * epoch_length
@@ -780,7 +647,6 @@ def main(args):
     model, autocast_dtype = setup_and_build_model(args)
     run_eval_linear(
         model=model,
-
         output_dir=args.output_dir,
         train_dataset_str=args.train_dataset_str,
         val_dataset_str=args.val_dataset_str,
@@ -799,8 +665,6 @@ def main(args):
         test_metric_types=args.test_metric_types,
         val_class_mapping_fpath=args.val_class_mapping_fpath,
         test_class_mapping_fpaths=args.test_class_mapping_fpaths,
-
-
         balanced_sampler=args.balanced_sampler,
         balanced_sampler_mode=args.balanced_sampler_mode,
         logit_adjusted_loss=args.logit_adjusted_loss,
@@ -826,6 +690,16 @@ if __name__ == "__main__":
         "--logit-adjusted-loss",
         action="store_true",
         help="Use logit adjusted loss",
+    )
+    args_parser.add_argument(
+        "opts",
+        help="""
+Modify config options at the end of the command. For Yacs configs, use
+space-separated "PATH.KEY VALUE" pairs.
+For python-based LazyConfig, use "path.key=value".
+        """.strip(),
+        default=None,
+        nargs=argparse.REMAINDER,
     )
     args = args_parser.parse_args()
     sys.exit(main(args))
