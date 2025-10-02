@@ -44,9 +44,6 @@ class _Split(Enum):
         basename, _ = os.path.splitext(filename)
         actual_index = int(basename.split("_")[-1])
         return class_id, actual_index
-    
-
-
 
 
 class ImageShipID(ExtendedVisionDataset):
